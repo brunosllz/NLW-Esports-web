@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+* {
+  @apply m-0 p-0 box-border;
+}
+
+body {
+  @apply bg-[#121214] text-white bg-galaxy bg-no-repeat bg-cover; 
+  -webkit-font-smoothing: antialiased
+}
