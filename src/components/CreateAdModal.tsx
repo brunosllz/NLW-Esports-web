@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
+import zod from 'zod'
 import classNames from 'classnames'
 
 import * as Dialog from '@radix-ui/react-dialog'
@@ -14,9 +18,64 @@ interface GameData {
   title: string
 }
 
+const newAdValidationSchema = zod.object({
+  name: zod.string().min(1, 'Informe o seu nome'),
+  yearsPlaying: zod.number().min(1, 'O valor deve ser maior que zero'),
+  discord: zod.string().min(1, 'Informe o seu discord'),
+  hourStart: zod.string().min(1),
+  hourEnd: zod.string().min(1),
+})
+
+type NewAdData = zod.infer<typeof newAdValidationSchema>
+
 export function CreateAdModal() {
   const [games, setGames] = useState<GameData[]>([])
   const [weekDays, setWeekDays] = useState<string[]>([])
+  const [useVoiceChannel, setUseVoiceChannel] = useState(false)
+  const [selectedgame, setSelectedGame] = useState<string | undefined>(
+    undefined,
+  )
+  const newAdForm = useForm<NewAdData>({
+    resolver: zodResolver(newAdValidationSchema),
+    defaultValues: {
+      discord: '',
+      hourEnd: '',
+      hourStart: '',
+      name: '',
+      yearsPlaying: undefined,
+    },
+  })
+
+  console.log(selectedgame)
+
+  const { handleSubmit, reset } = newAdForm
+
+  function handleSelectedGame(value: string) {
+    setSelectedGame(value)
+  }
+
+  async function handleCreateNewAd(data: NewAdData) {
+    try {
+      axios
+        .post(`http://localhost:3333/games/${selectedgame}/ads`, {
+          name: data.name,
+          yearsPlaying: data.yearsPlaying,
+          discord: data.discord,
+          weekDays: weekDays.map(Number),
+          hourStart: data.hourStart,
+          hourEnd: data.hourEnd,
+          useVoiceChannel,
+        })
+        .then((response) => console.log(response.data))
+
+      reset()
+      setWeekDays([])
+      setUseVoiceChannel(false)
+      setSelectedGame(undefined)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     fetch('http://localhost:3333/games')
@@ -33,125 +92,168 @@ export function CreateAdModal() {
           Publique um anúncio
         </Dialog.Title>
 
-        <form className="mt-8 flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(handleCreateNewAd)}
+          className="mt-8 flex flex-col gap-4"
+        >
           <div className="flex flex-col gap-2">
             <label htmlFor="game" className="font-semibold">
               Qual o game?
             </label>
-            <SelectInput dataValue={games} />
+            <SelectInput
+              dataValue={games}
+              selectedGame={selectedgame}
+              setSelectedGame={handleSelectedGame}
+            />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="name">Seu nome (ou nickname)</label>
-            <Input id="name" placeholder="Como te chamam dentro do game?" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
+          <FormProvider {...newAdForm}>
             <div className="flex flex-col gap-2">
-              <label htmlFor="yearsPlaying">Joga há quantos anos?</label>
-              <Input id="yearsPlaying" placeholder="Tudo bem ser ZERO" />
+              <label htmlFor="name">Seu nome (ou nickname)</label>
+              <Input
+                id="name"
+                placeholder="Como te chamam dentro do game?"
+                register="name"
+              />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="discord">Qual seu Discord?</label>
-              <Input id="discord" placeholder="Usuario#0000" />
-            </div>
-          </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="yearsPlaying">Joga há quantos anos?</label>
+                <Input
+                  type="number"
+                  id="yearsPlaying"
+                  placeholder="Tudo bem ser ZERO"
+                  register="yearsPlaying"
+                  setValueAsNumber
+                />
+              </div>
 
-          <div className="flex flex-row gap-6">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="weekDays">Quando costuma jogar?</label>
-
-              <ToggleGroup.Root
-                type="multiple"
-                className="grid grid-cols-4 gap-2"
-                value={weekDays}
-                onValueChange={setWeekDays}
-              >
-                <ToggleGroup.Item
-                  value="0"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('0'),
-                    'bg-zinc-900': !weekDays.includes('0'),
-                  })}
-                  title="Domingo"
-                >
-                  D
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="1"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('1'),
-                    'bg-zinc-900': !weekDays.includes('1'),
-                  })}
-                  title="Segunda"
-                >
-                  S
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="2"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('2'),
-                    'bg-zinc-900': !weekDays.includes('2'),
-                  })}
-                  title="Terça"
-                >
-                  T
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="3"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('3'),
-                    'bg-zinc-900': !weekDays.includes('3'),
-                  })}
-                  title="Quarta"
-                >
-                  Q
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="4"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('4'),
-                    'bg-zinc-900': !weekDays.includes('4'),
-                  })}
-                  title="Quinta"
-                >
-                  Q
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="5"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('5'),
-                    'bg-zinc-900': !weekDays.includes('5'),
-                  })}
-                  title="Sexta"
-                >
-                  S
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="6"
-                  className={classNames('w-8 h-8 rounded ', {
-                    'bg-violet-500': weekDays.includes('6'),
-                    'bg-zinc-900': !weekDays.includes('6'),
-                  })}
-                  title="Sábado"
-                >
-                  S
-                </ToggleGroup.Item>
-              </ToggleGroup.Root>
-            </div>
-
-            <div className="flex flex-col gaw-8 h-8 rounded bg-zinc-9002 flex-1">
-              <label htmlFor="hourStart">Qual horário do dia?</label>
-              <div className="grid grid-cols-2 gap-2">
-                <Input id="hourStart" placeholder="De" type="time" />
-                <Input id="hourEnd" placeholder="Até" type="time" />
+              <div className="flex flex-col gap-2">
+                <label htmlFor="discord">Qual seu Discord?</label>
+                <Input
+                  id="discord"
+                  placeholder="Usuario#0000"
+                  register="discord"
+                />
               </div>
             </div>
-          </div>
+
+            <div className="flex flex-row gap-6">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="weekDays">Quando costuma jogar?</label>
+
+                <ToggleGroup.Root
+                  type="multiple"
+                  className="grid grid-cols-4 gap-2"
+                  value={weekDays}
+                  onValueChange={setWeekDays}
+                >
+                  <ToggleGroup.Item
+                    value="0"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('0'),
+                      'bg-zinc-900': !weekDays.includes('0'),
+                    })}
+                    title="Domingo"
+                  >
+                    D
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="1"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('1'),
+                      'bg-zinc-900': !weekDays.includes('1'),
+                    })}
+                    title="Segunda"
+                  >
+                    S
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="2"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('2'),
+                      'bg-zinc-900': !weekDays.includes('2'),
+                    })}
+                    title="Terça"
+                  >
+                    T
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="3"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('3'),
+                      'bg-zinc-900': !weekDays.includes('3'),
+                    })}
+                    title="Quarta"
+                  >
+                    Q
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="4"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('4'),
+                      'bg-zinc-900': !weekDays.includes('4'),
+                    })}
+                    title="Quinta"
+                  >
+                    Q
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="5"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('5'),
+                      'bg-zinc-900': !weekDays.includes('5'),
+                    })}
+                    title="Sexta"
+                  >
+                    S
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value="6"
+                    className={classNames('w-8 h-8 rounded ', {
+                      'bg-violet-500': weekDays.includes('6'),
+                      'bg-zinc-900': !weekDays.includes('6'),
+                    })}
+                    title="Sábado"
+                  >
+                    S
+                  </ToggleGroup.Item>
+                </ToggleGroup.Root>
+              </div>
+
+              <div className="flex flex-col gaw-8 h-8 rounded bg-zinc-9002 flex-1">
+                <label htmlFor="hourStart">Qual horário do dia?</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    id="hourStart"
+                    placeholder="De"
+                    type="time"
+                    register="hourStart"
+                  />
+                  <Input
+                    id="hourEnd"
+                    placeholder="Até"
+                    type="time"
+                    register="hourEnd"
+                  />
+                </div>
+              </div>
+            </div>
+          </FormProvider>
 
           <label className="mt-2 flex gap-2 text-sm items-center">
-            <Checkbox.Root className="w-6 h-6 rounded bg-zinc-900 p-1">
+            <Checkbox.Root
+              checked={useVoiceChannel}
+              className="w-6 h-6 rounded bg-zinc-900 p-1"
+              onCheckedChange={(checked) => {
+                if (checked === true) {
+                  setUseVoiceChannel(true)
+                } else {
+                  setUseVoiceChannel(false)
+                }
+              }}
+            >
               <Checkbox.Indicator>
                 <Check className="w-4 h-4 text-emerald-500" />
               </Checkbox.Indicator>

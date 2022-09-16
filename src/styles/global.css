@@ -11,3 +11,18 @@ body {
   @apply bg-[#121214] text-white bg-galaxy bg-no-repeat bg-cover; 
   -webkit-font-smoothing: antialiased
 }
+
+@layer inputNumber {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+}
+
+@layer inputTimer {
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    background: none;
+    margin: 0;
+    text-align: center;
+}
+}
