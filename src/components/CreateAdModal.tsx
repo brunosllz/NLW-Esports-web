@@ -46,8 +46,6 @@ export function CreateAdModal() {
     },
   })
 
-  console.log(selectedgame)
-
   const { handleSubmit, reset } = newAdForm
 
   function handleSelectedGame(value: string) {
@@ -111,9 +109,9 @@ export function CreateAdModal() {
             <div className="flex flex-col gap-2">
               <label htmlFor="name">Seu nome (ou nickname)</label>
               <Input
+                name="name"
                 id="name"
                 placeholder="Como te chamam dentro do game?"
-                register="name"
               />
             </div>
 
@@ -123,19 +121,15 @@ export function CreateAdModal() {
                 <Input
                   type="number"
                   id="yearsPlaying"
-                  placeholder="Tudo bem ser ZERO"
-                  register="yearsPlaying"
+                  name="yearsPlaying"
                   setValueAsNumber
+                  placeholder="Tudo bem ser ZERO"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="discord">Qual seu Discord?</label>
-                <Input
-                  id="discord"
-                  placeholder="Usuario#0000"
-                  register="discord"
-                />
+                <Input name="discord" id="discord" placeholder="Usuario#0000" />
               </div>
             </div>
 
@@ -229,13 +223,13 @@ export function CreateAdModal() {
                     id="hourStart"
                     placeholder="De"
                     type="time"
-                    register="hourStart"
+                    name="hourStart"
                   />
                   <Input
                     id="hourEnd"
                     placeholder="Até"
                     type="time"
-                    register="hourEnd"
+                    name="hourEnd"
                   />
                 </div>
               </div>
