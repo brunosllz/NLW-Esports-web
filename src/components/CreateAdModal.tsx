@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
 import zod from 'zod'
+import * as yup from 'yup'
 import classNames from 'classnames'
 
 import * as Dialog from '@radix-ui/react-dialog'
@@ -12,29 +14,44 @@ import { Input } from './form/Input'
 
 import { Check, GameController } from 'phosphor-react'
 import { SelectetHeadless } from './form/SelectetHeadless'
+import { WeekDaysInput } from './form/WeekDaysInput'
+import { WeekDaysControlledInput } from './form/WeekDaysControlledInput'
+import { WeekdaysInputControl } from './form/WeekdaysInputControl'
+import { WeekDaysControllInput } from './form/WeekDaysControllInput'
 
 interface GameData {
   id: string
   title: string
 }
 
-const newAdValidationSchema = zod.object({
-  name: zod.string().min(1, 'Informe o seu nome'),
-  yearsPlaying: zod.number().min(1, 'O valor deve ser maior que zero'),
-  discord: zod.string().min(1, 'Informe o seu discord'),
-  hourStart: zod.string().min(1).max(24),
-  hourEnd: zod.string().min(1),
+interface NewAdData {
+  name: string
+  yearsPlaying: number
+  discord: string
+  hourStart: string
+  hourEnd: string
+  weekdays: string[]
+}
+
+const newAdValidationSchema = yup.object({
+  name: yup.string().required(),
+  yearsPlaying: yup.number().required(),
+  discord: yup.string().required(),
+  hourStart: yup.string().required(),
+  hourEnd: yup.string().required(),
+  weekdays: yup.string().required(),
 })
 
-type NewAdData = zod.infer<typeof newAdValidationSchema>
+// type NewAdData = zod.infer<typeof newAdValidationSchema>
 
 export function CreateAdModal() {
   const [weekDays, setWeekDays] = useState<string[]>([])
   const [useVoiceChannel, setUseVoiceChannel] = useState(false)
   const [games, setGames] = useState<GameData[]>([])
   const [selectedgame, setSelectedGame] = useState<GameData>({} as GameData)
+
   const newAdForm = useForm<NewAdData>({
-    resolver: zodResolver(newAdValidationSchema),
+    resolver: yupResolver(newAdValidationSchema),
     defaultValues: {
       discord: '',
       hourEnd: '',
@@ -44,12 +61,13 @@ export function CreateAdModal() {
     },
   })
 
-  const { handleSubmit, reset } = newAdForm
+  const { handleSubmit, reset, control, watch } = newAdForm
 
   function handleSelectedGame(value: GameData) {
     setSelectedGame(value)
   }
 
+  console.log(watch('weekdays'))
   async function handleCreateNewAd(data: NewAdData) {
     const hasSelectedGame = selectedgame.id
     const hasSelectWeekDays = weekDays.length > 0
@@ -103,8 +121,8 @@ export function CreateAdModal() {
           onSubmit={handleSubmit(handleCreateNewAd)}
           className="mt-8 flex flex-col gap-4"
         >
-          <FormProvider {...newAdForm}>
-            <div className="flex flex-col gap-2">
+          {/* <FormProvider {...newAdForm}> */}
+          {/* <div className="flex flex-col gap-2">
               <label htmlFor="game" className="font-semibold">
                 Qual o game?
               </label>
@@ -140,13 +158,19 @@ export function CreateAdModal() {
                 <label htmlFor="discord">Qual seu Discord?</label>
                 <Input name="discord" id="discord" placeholder="Usuario#0000" />
               </div>
-            </div>
+            </div> */}
 
-            <div className="flex flex-row gap-6">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="weekDays">Quando costuma jogar?</label>
+          <div className="flex flex-row gap-6">
+            <div className="flex flex-col gap-2">
+              {/* <label htmlFor="weekDays">Quando costuma jogar?</label> */}
+              {/* <WeekDaysControlledInput control={control} name="weekDays" /> */}
+              {/* <FormProvider {...newAdForm}> */}
+              <WeekDaysControllInput control={control} name="weekdays" />
+              {/* </FormProvider> */}
 
-                <ToggleGroup.Root
+              {/* <WeekDaysInput name="weekDays" control={control} /> */}
+
+              {/* <ToggleGroup.Root
                   type="multiple"
                   className="grid grid-cols-4 gap-2"
                   value={weekDays}
@@ -222,10 +246,10 @@ export function CreateAdModal() {
                   >
                     S
                   </ToggleGroup.Item>
-                </ToggleGroup.Root>
-              </div>
+                </ToggleGroup.Root> */}
+            </div>
 
-              <div className="flex flex-col gaw-8 h-8 rounded bg-zinc-9002 flex-1">
+            {/* <div className="flex flex-col gaw-8 h-8 rounded bg-zinc-9002 flex-1">
                 <label htmlFor="hourStart">Qual horário do dia?</label>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
@@ -241,9 +265,9 @@ export function CreateAdModal() {
                     name="hourEnd"
                   />
                 </div>
-              </div>
-            </div>
-          </FormProvider>
+              </div> */}
+          </div>
+          {/* </FormProvider> */}
 
           <label className="mt-2 flex gap-2 text-sm items-center">
             <Checkbox.Root

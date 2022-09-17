@@ -1,5 +1,5 @@
 import { SwiperSlide, Swiper, SwiperProps } from 'swiper/react'
-import { Navigation, FreeMode } from 'swiper'
+import { Navigation } from 'swiper'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css'
@@ -23,8 +23,7 @@ export function Slider({ data }: SliderProps) {
     spaceBetween: 24,
     slidesPerView: 1,
     navigation: true,
-    freeMode: true,
-    observer: true,
+    draggable: true,
     breakpoints: {
       768: {
         slidesPerView: 2,
@@ -47,7 +46,7 @@ export function Slider({ data }: SliderProps) {
 
   return (
     <Swiper
-      modules={[Navigation, FreeMode]}
+      modules={[Navigation]}
       className="flex flex-1 w-[360px] -z-0 mt-16 md:min-w-[560px] slide-900:min-w-[760px]  slide-1146:min-w-[1060px] slide-1344:min-w-[1260px] "
       {...swipersSettings}
     >

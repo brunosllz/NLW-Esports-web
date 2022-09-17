@@ -5,6 +5,7 @@ import { CreateAdBanner } from '../components/CreateAdBanner'
 import LogoImg from '../assets/logo-nlw-esports.svg'
 import { CreateAdModal } from '../components/CreateAdModal'
 import { Slider } from '../components/Slider'
+import axios from 'axios'
 
 interface GameData {
   id: string
@@ -19,9 +20,9 @@ export function Home() {
   const [games, setGames] = useState<GameData[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:3333/games')
-      .then((response) => response.json())
-      .then((data) => setGames(data))
+    axios
+      .get('http://localhost:3333/games')
+      .then((response) => setGames(response.data))
   }, [])
 
   return (
@@ -41,19 +42,6 @@ export function Home() {
       </h1>
 
       <Slider data={games} />
-
-      {/* <div className="grid grid-cols-6 gap-6 mt-16">
-        {games.map((game) => {
-          return (
-            <GameBanner
-              key={game.id}
-              banneUrl={game.bannerUrl}
-              title={game.title}
-              adsCount={game._count.ads}
-            />
-          )
-        })}
-      </div> */}
 
       <Dialog.Root>
         <CreateAdBanner />

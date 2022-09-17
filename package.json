@@ -23,6 +23,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.35.0",
     "swiper": "^8.4.2",
+    "yup": "^0.32.11",
     "zod": "^3.19.1"
   },
   "devDependencies": {
