@@ -22,7 +22,7 @@ const newAdValidationSchema = zod.object({
   name: zod.string().min(1, 'Informe o seu nome'),
   yearsPlaying: zod.number().min(1, 'O valor deve ser maior que zero'),
   discord: zod.string().min(1, 'Informe o seu discord'),
-  hourStart: zod.string().min(1),
+  hourStart: zod.string().min(1).max(24),
   hourEnd: zod.string().min(1),
 })
 
@@ -51,6 +51,17 @@ export function CreateAdModal() {
   }
 
   async function handleCreateNewAd(data: NewAdData) {
+    const hasSelectedGame = selectedgame.id
+    const hasSelectWeekDays = weekDays.length > 0
+
+    if (!hasSelectedGame) {
+      return
+    }
+
+    if (!hasSelectWeekDays) {
+      return
+    }
+
     try {
       axios
         .post(`http://localhost:3333/games/${selectedgame!.id}/ads`, {

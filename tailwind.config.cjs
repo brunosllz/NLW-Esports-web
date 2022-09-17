@@ -2,6 +2,12 @@
 module.exports = {
   content: ['./src/**/*.tsx'],
   theme: {
+    screens: {
+      md: '768px',
+      'slide-900': '900px',
+      'slide-1146': '1146px',
+      'slide-1344': '1330px',
+    },
     fontFamily: {
       sans: ['Inter', 'sans-serif'],
     },

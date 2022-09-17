@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-
 import * as Dialog from '@radix-ui/react-dialog'
-import { GameBanner } from '../components/GameBanner'
 import { CreateAdBanner } from '../components/CreateAdBanner'
 
 import LogoImg from '../assets/logo-nlw-esports.svg'
 import { CreateAdModal } from '../components/CreateAdModal'
+import { Slider } from '../components/Slider'
 
 interface GameData {
   id: string
@@ -41,7 +40,9 @@ export function Home() {
         está aqui
       </h1>
 
-      <div className="grid grid-cols-6 gap-6 mt-16">
+      <Slider data={games} />
+
+      {/* <div className="grid grid-cols-6 gap-6 mt-16">
         {games.map((game) => {
           return (
             <GameBanner
@@ -52,7 +53,7 @@ export function Home() {
             />
           )
         })}
-      </div>
+      </div> */}
 
       <Dialog.Root>
         <CreateAdBanner />
