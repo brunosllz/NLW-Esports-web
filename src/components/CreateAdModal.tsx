@@ -11,6 +11,7 @@ import { WeekDaysControllInput } from './form/WeekDaysControllInput'
 
 import { Check, GameController } from 'phosphor-react'
 import { SelectetHeadless } from './form/SelectetHeadless'
+import { InputHourControll } from './form/ImputHourControll'
 
 interface GameData {
   id: string
@@ -27,12 +28,17 @@ interface NewAdData {
 }
 
 const newAdValidationSchema = yup.object({
-  name: yup.string().required(),
-  yearsPlaying: yup.number().required(),
-  discord: yup.string().required(),
-  hourStart: yup.string().required(),
+  name: yup.string().required('Informe o seu nome ou nickname'),
+  yearsPlaying: yup
+    .number()
+    .required('Informe quantos a quantos anos você joga'),
+  discord: yup.string().required('Informe o seu discord'),
+  hourStart: yup
+    .string()
+    .required()
+    .matches(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/),
   hourEnd: yup.string().required(),
-  weekDays: yup.array().min(1),
+  weekDays: yup.array().min(1, 'Você deve selecionar um dia da semana'),
 })
 
 export function CreateAdModal() {
@@ -41,7 +47,7 @@ export function CreateAdModal() {
   const [games, setGames] = useState<GameData[]>([])
   const [selectedgame, setSelectedGame] = useState<GameData>({} as GameData)
 
-  const newAdForm = useForm<NewAdData>({
+  const { handleSubmit, reset, control, watch } = useForm<NewAdData>({
     resolver: yupResolver(newAdValidationSchema),
     defaultValues: {
       discord: '',
@@ -52,7 +58,7 @@ export function CreateAdModal() {
     },
   })
 
-  const { handleSubmit, reset, control } = newAdForm
+  console.log(watch('weekDays'))
 
   function handleSelectedGame(value: GameData) {
     setSelectedGame(value)
@@ -136,28 +142,24 @@ export function CreateAdModal() {
             />
           </div>
 
-          <div className="flex flex-row gap-6">
-            <div className="flex flex-col gap-2">
-              <WeekDaysControllInput control={control} name="weekDays" />
-            </div>
+          <div className="flex flex-row justify-between ">
+            <WeekDaysControllInput control={control} name="weekDays" />
 
-            {/* <div className="flex flex-col gaw-8 h-8 rounded bg-zinc-9002 flex-1">
-                <label htmlFor="hourStart">Qual horário do dia?</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    id="hourStart"
-                    placeholder="De"
-                    type="time"
-                    name="hourStart"
-                  />
-                  <Input
-                    id="hourEnd"
-                    placeholder="Até"
-                    type="time"
-                    name="hourEnd"
-                  />
-                </div>
-              </div> */}
+            <div className="flex flex-col gap-2  h-8  bg-zinc-9002  ">
+              <label htmlFor="hourStart">Qual horário do dia?</label>
+              <div className="grid grid-cols-2 gap-2">
+                <InputHourControll
+                  type="time"
+                  control={control}
+                  name="hourStart"
+                />
+                <InputHourControll
+                  type="time"
+                  control={control}
+                  name="hourEnd"
+                />
+              </div>
+            </div>
           </div>
 
           <label className="mt-2 flex gap-2 text-sm items-center">

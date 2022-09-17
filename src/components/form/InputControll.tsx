@@ -1,5 +1,6 @@
 import { HTMLAttributes, HTMLInputTypeAttribute } from 'react'
 import { useController, Control, FieldValues, Path } from 'react-hook-form'
+import classNames from 'classnames'
 
 interface InputControllProps<T extends FieldValues = FieldValues>
   extends HTMLAttributes<HTMLInputElement> {
@@ -17,8 +18,8 @@ export function InputControll<T extends FieldValues = FieldValues>({
   ...rest
 }: InputControllProps<T>) {
   const {
-    field: { value, onChange },
-    // fieldState: { error },
+    field: { value, onChange, ref },
+    fieldState: { error },
   } = useController({ name, control })
 
   return (
@@ -27,11 +28,17 @@ export function InputControll<T extends FieldValues = FieldValues>({
         {labelValue}
       </label>
       <input
+        ref={ref}
         type={type}
         id="name"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className={`bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-violet-500 appearance-none inputNumber inputTimer`}
+        className={classNames(
+          `bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-violet-500 appearance-none inputNumber inputTimer`,
+          {
+            'ring-red-500 ring-1': !!error,
+          },
+        )}
         {...rest}
       />
     </div>

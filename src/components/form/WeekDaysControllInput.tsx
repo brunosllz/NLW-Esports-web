@@ -31,7 +31,7 @@ export function WeekDaysControllInput<T extends FieldValues = FieldValues>({
   } = useController({ name, control })
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-48">
       <label htmlFor="weekDays" className="font-semibold">
         Quando costuma jogar?
       </label>
