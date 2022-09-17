@@ -30,7 +30,7 @@ export function InputControll<T extends FieldValues = FieldValues>({
       <input
         ref={ref}
         type={type}
-        id="name"
+        id={name}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className={classNames(

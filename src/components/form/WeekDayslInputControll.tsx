@@ -16,15 +16,15 @@ const days: Day[] = [
   { label: 'S', title: 'Sábado' },
 ]
 
-interface WeekDaysControllInputProps<T extends FieldValues = FieldValues> {
+interface WeekDayslInputControllProps<T extends FieldValues = FieldValues> {
   name: Path<T>
   control: Control<T>
 }
 
-export function WeekDaysControllInput<T extends FieldValues = FieldValues>({
+export function WeekDayslInputControll<T extends FieldValues = FieldValues>({
   control,
   name,
-}: WeekDaysControllInputProps<T>) {
+}: WeekDayslInputControllProps<T>) {
   const {
     field: { value, onChange },
     fieldState: { error },

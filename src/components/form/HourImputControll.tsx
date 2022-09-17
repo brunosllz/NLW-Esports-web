@@ -2,18 +2,18 @@ import { HTMLAttributes, HTMLInputTypeAttribute } from 'react'
 import { useController, FieldValues, Control, Path } from 'react-hook-form'
 import classNames from 'classnames'
 
-interface InputHourControllProps<T extends FieldValues = FieldValues>
+interface HourInputControllProps<T extends FieldValues = FieldValues>
   extends HTMLAttributes<HTMLInputElement> {
   name: Path<T>
   control: Control<T>
   type?: HTMLInputTypeAttribute
 }
 
-export function InputHourControll<T extends FieldValues = FieldValues>({
+export function HourInputControll<T extends FieldValues = FieldValues>({
   control,
   name,
   type,
-}: InputHourControllProps<T>) {
+}: HourInputControllProps<T>) {
   const {
     field: { onChange, value },
     fieldState: { error },

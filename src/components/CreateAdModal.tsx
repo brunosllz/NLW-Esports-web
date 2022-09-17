@@ -7,11 +7,11 @@ import * as yup from 'yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { InputControll } from './form/InputControll'
-import { WeekDaysControllInput } from './form/WeekDaysControllInput'
+import { WeekDayslInputControll } from './form/WeekDayslInputControll'
+import { HourInputControll } from './form/HourImputControll'
+import { SelectinputControll } from './form/SelectinputControll'
 
 import { Check, GameController } from 'phosphor-react'
-import { SelectetHeadless } from './form/SelectetHeadless'
-import { InputHourControll } from './form/ImputHourControll'
 
 interface GameData {
   id: string
@@ -25,6 +25,7 @@ interface NewAdData {
   hourStart: string
   hourEnd: string
   weekDays: string[]
+  game: GameData
 }
 
 const newAdValidationSchema = yup.object({
@@ -38,14 +39,23 @@ const newAdValidationSchema = yup.object({
     .required()
     .matches(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/),
   hourEnd: yup.string().required(),
-  weekDays: yup.array().min(1, 'Você deve selecionar um dia da semana'),
+  weekDays: yup
+    .array()
+    .min(1, 'Você deve selecionar um dia da semana')
+    .required('Você deve selecionar um dia da semana'),
+  game: yup.object().shape({
+    id: yup.string().required(),
+    title: yup.string().required(),
+    bannerUrl: yup.string().required(),
+    _count: yup.object().shape({
+      ads: yup.number().required(),
+    }),
+  }),
 })
 
 export function CreateAdModal() {
-  const [weekDays, setWeekDays] = useState<string[]>([])
   const [useVoiceChannel, setUseVoiceChannel] = useState(false)
   const [games, setGames] = useState<GameData[]>([])
-  const [selectedgame, setSelectedGame] = useState<GameData>({} as GameData)
 
   const { handleSubmit, reset, control, watch } = useForm<NewAdData>({
     resolver: yupResolver(newAdValidationSchema),
@@ -58,26 +68,15 @@ export function CreateAdModal() {
     },
   })
 
-  console.log(watch('weekDays'))
-
-  function handleSelectedGame(value: GameData) {
-    setSelectedGame(value)
-  }
-
+  console.log(watch('game'))
   async function handleCreateNewAd(data: NewAdData) {
-    const hasSelectedGame = selectedgame.id
-
-    if (!hasSelectedGame) {
-      return
-    }
-
     try {
       axios
-        .post(`http://localhost:3333/games/${selectedgame!.id}/ads`, {
+        .post(`http://localhost:3333/games/${data.game.id}/ads`, {
           name: data.name,
           yearsPlaying: data.yearsPlaying,
           discord: data.discord,
-          weekDays: weekDays.map(Number),
+          weekDays: data.weekDays.map(Number),
           hourStart: data.hourStart,
           hourEnd: data.hourEnd,
           useVoiceChannel,
@@ -85,9 +84,7 @@ export function CreateAdModal() {
         .then((response) => console.log(response.data))
 
       reset()
-      setWeekDays([])
       setUseVoiceChannel(false)
-      setSelectedGame({} as GameData)
     } catch (error) {
       console.log(error)
     }
@@ -112,11 +109,17 @@ export function CreateAdModal() {
           onSubmit={handleSubmit(handleCreateNewAd)}
           className="mt-8 flex flex-col gap-4"
         >
-          <SelectetHeadless
+          <SelectinputControll
+            control={control}
+            name="game"
+            dataValue={games}
+          />
+
+          {/* <SelectetHeadless
             dataValue={games}
             selectedGame={selectedgame}
             setSelectedGame={handleSelectedGame}
-          />
+          /> */}
 
           <InputControll
             control={control}
@@ -143,17 +146,17 @@ export function CreateAdModal() {
           </div>
 
           <div className="flex flex-row justify-between ">
-            <WeekDaysControllInput control={control} name="weekDays" />
+            <WeekDayslInputControll control={control} name="weekDays" />
 
             <div className="flex flex-col gap-2  h-8  bg-zinc-9002  ">
               <label htmlFor="hourStart">Qual horário do dia?</label>
               <div className="grid grid-cols-2 gap-2">
-                <InputHourControll
+                <HourInputControll
                   type="time"
                   control={control}
                   name="hourStart"
                 />
-                <InputHourControll
+                <HourInputControll
                   type="time"
                   control={control}
                   name="hourEnd"
