@@ -1,23 +1,16 @@
 import { useEffect, useState } from 'react'
-import { useForm, FormProvider } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
-import zod from 'zod'
 import * as yup from 'yup'
-import classNames from 'classnames'
 
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Checkbox from '@radix-ui/react-checkbox'
-import * as ToggleGroup from '@radix-ui/react-toggle-group'
-import { Input } from './form/Input'
+import { InputControll } from './form/InputControll'
+import { WeekDaysControllInput } from './form/WeekDaysControllInput'
 
 import { Check, GameController } from 'phosphor-react'
 import { SelectetHeadless } from './form/SelectetHeadless'
-import { WeekDaysInput } from './form/WeekDaysInput'
-import { WeekDaysControlledInput } from './form/WeekDaysControlledInput'
-import { WeekdaysInputControl } from './form/WeekdaysInputControl'
-import { WeekDaysControllInput } from './form/WeekDaysControllInput'
 
 interface GameData {
   id: string
@@ -30,7 +23,7 @@ interface NewAdData {
   discord: string
   hourStart: string
   hourEnd: string
-  weekdays: string[]
+  weekDays: string[]
 }
 
 const newAdValidationSchema = yup.object({
@@ -39,10 +32,8 @@ const newAdValidationSchema = yup.object({
   discord: yup.string().required(),
   hourStart: yup.string().required(),
   hourEnd: yup.string().required(),
-  weekdays: yup.string().required(),
+  weekDays: yup.array().min(1),
 })
-
-// type NewAdData = zod.infer<typeof newAdValidationSchema>
 
 export function CreateAdModal() {
   const [weekDays, setWeekDays] = useState<string[]>([])
@@ -61,22 +52,16 @@ export function CreateAdModal() {
     },
   })
 
-  const { handleSubmit, reset, control, watch } = newAdForm
+  const { handleSubmit, reset, control } = newAdForm
 
   function handleSelectedGame(value: GameData) {
     setSelectedGame(value)
   }
 
-  console.log(watch('weekdays'))
   async function handleCreateNewAd(data: NewAdData) {
     const hasSelectedGame = selectedgame.id
-    const hasSelectWeekDays = weekDays.length > 0
 
     if (!hasSelectedGame) {
-      return
-    }
-
-    if (!hasSelectWeekDays) {
       return
     }
 
@@ -121,132 +106,39 @@ export function CreateAdModal() {
           onSubmit={handleSubmit(handleCreateNewAd)}
           className="mt-8 flex flex-col gap-4"
         >
-          {/* <FormProvider {...newAdForm}> */}
-          {/* <div className="flex flex-col gap-2">
-              <label htmlFor="game" className="font-semibold">
-                Qual o game?
-              </label>
-              <SelectetHeadless
-                dataValue={games}
-                selectedGame={selectedgame}
-                setSelectedGame={handleSelectedGame}
-              />
-            </div>
+          <SelectetHeadless
+            dataValue={games}
+            selectedGame={selectedgame}
+            setSelectedGame={handleSelectedGame}
+          />
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="name">Seu nome (ou nickname)</label>
-              <Input
-                name="name"
-                id="name"
-                placeholder="Como te chamam dentro do game?"
-              />
-            </div>
+          <InputControll
+            control={control}
+            name="name"
+            placeholder="Como te chamam dentro do game?"
+            labelValue="Seu nome (ou nickname)"
+          />
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="yearsPlaying">Joga há quantos anos?</label>
-                <Input
-                  type="number"
-                  id="yearsPlaying"
-                  name="yearsPlaying"
-                  setvalueasnumber={true}
-                  placeholder="Tudo bem ser ZERO"
-                />
-              </div>
+          <div className="grid grid-cols-2 gap-6">
+            <InputControll
+              control={control}
+              type="number"
+              name="yearsPlaying"
+              placeholder="Tudo bem ser ZERO"
+              labelValue="Joga há quantos anos?"
+            />
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="discord">Qual seu Discord?</label>
-                <Input name="discord" id="discord" placeholder="Usuario#0000" />
-              </div>
-            </div> */}
+            <InputControll
+              control={control}
+              name="discord"
+              placeholder="Usuario#0000"
+              labelValue="Qual seu Discord?"
+            />
+          </div>
 
           <div className="flex flex-row gap-6">
             <div className="flex flex-col gap-2">
-              {/* <label htmlFor="weekDays">Quando costuma jogar?</label> */}
-              {/* <WeekDaysControlledInput control={control} name="weekDays" /> */}
-              {/* <FormProvider {...newAdForm}> */}
-              <WeekDaysControllInput control={control} name="weekdays" />
-              {/* </FormProvider> */}
-
-              {/* <WeekDaysInput name="weekDays" control={control} /> */}
-
-              {/* <ToggleGroup.Root
-                  type="multiple"
-                  className="grid grid-cols-4 gap-2"
-                  value={weekDays}
-                  onValueChange={setWeekDays}
-                >
-                  <ToggleGroup.Item
-                    value="0"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('0'),
-                      'bg-zinc-900': !weekDays.includes('0'),
-                    })}
-                    title="Domingo"
-                  >
-                    D
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    value="1"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('1'),
-                      'bg-zinc-900': !weekDays.includes('1'),
-                    })}
-                    title="Segunda"
-                  >
-                    S
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    value="2"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('2'),
-                      'bg-zinc-900': !weekDays.includes('2'),
-                    })}
-                    title="Terça"
-                  >
-                    T
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    value="3"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('3'),
-                      'bg-zinc-900': !weekDays.includes('3'),
-                    })}
-                    title="Quarta"
-                  >
-                    Q
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    value="4"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('4'),
-                      'bg-zinc-900': !weekDays.includes('4'),
-                    })}
-                    title="Quinta"
-                  >
-                    Q
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    value="5"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('5'),
-                      'bg-zinc-900': !weekDays.includes('5'),
-                    })}
-                    title="Sexta"
-                  >
-                    S
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item
-                    value="6"
-                    className={classNames('w-8 h-8 rounded ', {
-                      'bg-violet-500': weekDays.includes('6'),
-                      'bg-zinc-900': !weekDays.includes('6'),
-                    })}
-                    title="Sábado"
-                  >
-                    S
-                  </ToggleGroup.Item>
-                </ToggleGroup.Root> */}
+              <WeekDaysControllInput control={control} name="weekDays" />
             </div>
 
             {/* <div className="flex flex-col gaw-8 h-8 rounded bg-zinc-9002 flex-1">
@@ -267,7 +159,6 @@ export function CreateAdModal() {
                 </div>
               </div> */}
           </div>
-          {/* </FormProvider> */}
 
           <label className="mt-2 flex gap-2 text-sm items-center">
             <Checkbox.Root

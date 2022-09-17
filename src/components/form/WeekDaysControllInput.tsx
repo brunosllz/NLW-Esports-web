@@ -35,7 +35,6 @@ export function WeekDaysControllInput<T extends FieldValues = FieldValues>({
       <label htmlFor="weekDays" className="font-semibold">
         Quando costuma jogar?
       </label>
-      <input />
 
       <ToggleGroup.Root
         type="multiple"
