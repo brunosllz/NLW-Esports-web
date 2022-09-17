@@ -9,9 +9,9 @@ import * as Dialog from '@radix-ui/react-dialog'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
 import { Input } from './form/Input'
-import { SelectInput } from './form/SelectInput'
 
 import { Check, GameController } from 'phosphor-react'
+import { SelectetHeadless } from './form/SelectetHeadless'
 
 interface GameData {
   id: string
@@ -29,12 +29,10 @@ const newAdValidationSchema = zod.object({
 type NewAdData = zod.infer<typeof newAdValidationSchema>
 
 export function CreateAdModal() {
-  const [games, setGames] = useState<GameData[]>([])
   const [weekDays, setWeekDays] = useState<string[]>([])
   const [useVoiceChannel, setUseVoiceChannel] = useState(false)
-  const [selectedgame, setSelectedGame] = useState<string | undefined>(
-    undefined,
-  )
+  const [games, setGames] = useState<GameData[]>([])
+  const [selectedgame, setSelectedGame] = useState<GameData>({} as GameData)
   const newAdForm = useForm<NewAdData>({
     resolver: zodResolver(newAdValidationSchema),
     defaultValues: {
@@ -48,14 +46,14 @@ export function CreateAdModal() {
 
   const { handleSubmit, reset } = newAdForm
 
-  function handleSelectedGame(value: string) {
+  function handleSelectedGame(value: GameData) {
     setSelectedGame(value)
   }
 
   async function handleCreateNewAd(data: NewAdData) {
     try {
       axios
-        .post(`http://localhost:3333/games/${selectedgame}/ads`, {
+        .post(`http://localhost:3333/games/${selectedgame!.id}/ads`, {
           name: data.name,
           yearsPlaying: data.yearsPlaying,
           discord: data.discord,
@@ -69,16 +67,16 @@ export function CreateAdModal() {
       reset()
       setWeekDays([])
       setUseVoiceChannel(false)
-      setSelectedGame(undefined)
+      setSelectedGame({} as GameData)
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-    fetch('http://localhost:3333/games')
-      .then((response) => response.json())
-      .then((data) => setGames(data))
+    axios
+      .get('http://localhost:3333/games')
+      .then((response) => setGames(response.data))
   }, [])
 
   return (
@@ -94,18 +92,18 @@ export function CreateAdModal() {
           onSubmit={handleSubmit(handleCreateNewAd)}
           className="mt-8 flex flex-col gap-4"
         >
-          <div className="flex flex-col gap-2">
-            <label htmlFor="game" className="font-semibold">
-              Qual o game?
-            </label>
-            <SelectInput
-              dataValue={games}
-              selectedGame={selectedgame}
-              setSelectedGame={handleSelectedGame}
-            />
-          </div>
-
           <FormProvider {...newAdForm}>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="game" className="font-semibold">
+                Qual o game?
+              </label>
+              <SelectetHeadless
+                dataValue={games}
+                selectedGame={selectedgame}
+                setSelectedGame={handleSelectedGame}
+              />
+            </div>
+
             <div className="flex flex-col gap-2">
               <label htmlFor="name">Seu nome (ou nickname)</label>
               <Input
@@ -122,7 +120,7 @@ export function CreateAdModal() {
                   type="number"
                   id="yearsPlaying"
                   name="yearsPlaying"
-                  setValueAsNumber
+                  setvalueasnumber={true}
                   placeholder="Tudo bem ser ZERO"
                 />
               </div>
