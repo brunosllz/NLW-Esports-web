@@ -23,13 +23,13 @@ Projeto desenvolvido na NLW Esport [Rockeseat](https://www.rocketseat.com.br/), 
 
 ## [](https://github.com/brunosllz/Platform_lab#-%EF%B8%8F-funcionalidades) ⚙️ Funcionalidades
 
-- Cadastrar os anuncios
-
+- Cadastrar anuncios
+- Listar games
 
 ---
 
 #### 🧭 Rodando a aplicação
-Para está aplicação vou desenvolvido um back-end, pode cloanar através deste [Repositótio](https://www.figma.com/community/file/1150897317533332617)
+Para está aplicação vou desenvolvido um back-end, pode cloanar através deste [Repositótio]()
 
 ```bash
 # Clone este repositório
