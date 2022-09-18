@@ -29,7 +29,7 @@ Projeto desenvolvido na NLW Esport [Rockeseat](https://www.rocketseat.com.br/), 
 ---
 
 #### 🧭 Rodando a aplicação
-Para está aplicação vou desenvolvido um back-end, pode cloanar através deste [Repositótio]()
+Para está aplicação vou desenvolvido um back-end, pode cloanar através deste [Repositótio](https://github.com/brunosllz/NLW-Esports-Server)
 
 ```bash
 # Clone este repositório
