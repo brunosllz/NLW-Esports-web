@@ -4,7 +4,7 @@ import { CreateAdBanner } from '../components/CreateAdBanner'
 
 import LogoImg from '../assets/logo-nlw-esports.svg'
 import { CreateAdModal } from '../components/CreateAdModal'
-import { Slider } from '../components/Slider'
+import { Slider } from '../components/slider'
 import axios from 'axios'
 
 interface GameData {

@@ -20,7 +20,7 @@ interface GameData {
 
 interface NewAdData {
   name: string
-  yearsPlaying: number
+  yearsPlaying: number | string
   discord: string
   hourStart: string
   hourEnd: string
@@ -57,18 +57,18 @@ export function CreateAdModal() {
   const [useVoiceChannel, setUseVoiceChannel] = useState(false)
   const [games, setGames] = useState<GameData[]>([])
 
-  const { handleSubmit, reset, control, watch } = useForm<NewAdData>({
+  const { handleSubmit, reset, control } = useForm<NewAdData>({
     resolver: yupResolver(newAdValidationSchema),
     defaultValues: {
       discord: '',
       hourEnd: '',
       hourStart: '',
       name: '',
-      yearsPlaying: undefined,
+      yearsPlaying: '',
+      weekDays: [],
     },
   })
 
-  console.log(watch('game'))
   async function handleCreateNewAd(data: NewAdData) {
     try {
       axios
@@ -114,12 +114,6 @@ export function CreateAdModal() {
             name="game"
             dataValue={games}
           />
-
-          {/* <SelectetHeadless
-            dataValue={games}
-            selectedGame={selectedgame}
-            setSelectedGame={handleSelectedGame}
-          /> */}
 
           <InputControll
             control={control}
