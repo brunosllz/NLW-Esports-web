@@ -1,6 +1,6 @@
 
 <h4 align="center">
- 🎮 NLW Esport 🎮
+ 🎮 NLW Esport - Web🎮
 </h4>
 
 <p align="center">
